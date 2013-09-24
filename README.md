@@ -1,7 +1,7 @@
 soap-ci
 =======
 
-The Simples Of All Possible Continuous Integration Servers
+The Simplest Of All Possible Continuous Integration Servers
 
 Build Status
 ------------
