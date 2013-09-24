@@ -21,5 +21,5 @@ repos:
       success   : # action to take on success, in addition to the default 
       failure   : # action to take on failure.  Maybe mail someone?
     ci_branches:
-      - name : master
+      - name : develop
 
