@@ -1,5 +1,5 @@
 *.py[cod]
-
+.DS_Store
 # C extensions
 *.so
 
@@ -9,8 +9,8 @@
 dist
 build
 eggs
-parts
 bin
+parts
 var
 sdist
 develop-eggs
@@ -33,3 +33,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Project-specific
+working/
