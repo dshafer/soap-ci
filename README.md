@@ -1,9 +1,9 @@
 soap-ci
 =======
 
-The Simples Of All Possible Continuous Integration Servers
+The Simplest Of All Possible Continuous Integration Servers
 
 Build Status
 ------------
-![build status](http://drewshafer.com/ci/soap-ci/develop/current/status.png)
+[![build status](https://drewshafer.com/ci/soap-ci/develop/current/status.png)](http://drewshafer.com/ci/soap-ci/develop/current/log.txt)
 
