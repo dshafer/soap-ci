@@ -5,5 +5,5 @@ The Simplest Of All Possible Continuous Integration Servers
 
 Build Status
 ------------
-[![current build status](http://drewshafer.com/ci/soap-ci/master/current/status.png)](http://drewshafer.com/ci/soap-ci/master/current/log.txt)
+[![current build status](https://drewshafer.com/ci/soap-ci/master/current/status.png)](http://drewshafer.com/ci/soap-ci/master/current/log.txt)
 
