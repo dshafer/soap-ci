@@ -1,0 +1,25 @@
+ 
+success_png : ${__lib_dir__}/assets/Thumbs-up-icon.png
+failure_png : ${__lib_dir__}/assets/Thumbs-down-icon.png
+
+sandbox_types:
+  - name       : virtualenv
+    create_cmd : virtualenv ${__branch_working_dir__}/.venv
+    enter_cmd  : source ${__branch_working_dir__}/.venv/bin/activate
+
+repos:
+  - name          : soap-ci
+    url           : git@github.com:dshafer/soap-ci.git
+    checkout_dir  : .repo_mirror
+    sandbox_type  : virtualenv
+    pre_test_cmd  : pip install -r requirements.txt
+    default_build  :
+      setup     :
+        - pip install -r requirements.txt
+      build_cmd :
+        - python test.py
+      success   : # action to take on success, in addition to the default 
+      failure   : # action to take on failure.  Maybe mail someone?
+    ci_branches:
+      - name : master
+
