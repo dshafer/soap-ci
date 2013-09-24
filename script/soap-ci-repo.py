@@ -22,7 +22,9 @@ def main(args_array):
 
     repo.fetch()
 
-    for branch_name in repo.ci_branches:
+    repo.expand_branch_wildcards()
+
+    for branch_name, branch in repo.ci_branches.items():
         br_cmd = 'python soap-ci-branch.py --working-dir {0} --repo {1} --branch {2}'.format(working_dir, repo.name, branch_name)
         pr_proc = subprocess.Popen(shlex.split(br_cmd), cwd=script_dir)
         

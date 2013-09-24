@@ -21,6 +21,7 @@ def main(args_array):
     config = ci_util.Config(working_dir=working_dir)
 
     repo = config.repos[args.repo]
+    repo.expand_branch_wildcards()
     ci_branch = repo.ci_branches[args.branch]
 
     #check out the branch locally if necessary

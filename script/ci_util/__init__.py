@@ -107,6 +107,28 @@ class Repo(object):
         git_cmd = shlex.split('git fetch origin')
         subprocess.call(git_cmd, cwd=self.checkout_dir)
 
+    def expand_branch_wildcards(self):
+        for ci_branch_name, ci_branch in self.ci_branches.items():
+            if ci_branch.name_regex:
+                branch_re = re.compile(ci_branch.name_regex)
+                cmd = 'git branch -r'
+                output = subprocess.check_output(shlex.split(cmd), cwd=self.checkout_dir)
+                lines = output.split('\n')
+                for branch_name in lines:
+                    branch_name = branch_name.strip()
+                    if branch_name.startswith('origin/'):
+                        branch_name = branch_name[7:]
+                    if branch_re.search(branch_name):
+                        config_dict = dict(ci_branch.config_dict)
+                        config_dict.update({'name':branch_name})
+                        expanded_branch = CiBranch(self, config_dict)
+                        print '{0} - adding branch {1} from wildcard {2}'.format(self.name, expanded_branch.name, ci_branch_name)
+                        self.ci_branches[expanded_branch.name] = expanded_branch
+
+
+                del self.ci_branches[ci_branch_name]
+
+
 class Build(object):
     def __init__(self, ci_branch, build_dict):
         self.ci_branch = ci_branch
@@ -136,7 +158,7 @@ class Build(object):
             (success, stdout, stderr) = self._run_stage(self.steps[step], stdout, stderr)
             if not success:
                 self.record_failure(output_dir, step, stdout, stderr)
-                return False
+                return (success, stdout, stderr)
 
         self.record_success(output_dir, stdout, stderr)
         return success, stdout, stderr
@@ -185,18 +207,27 @@ class Build(object):
 class CiBranch(object):
     def __init__(self, repo, ci_dict):
         self.repo = repo
-        self.name = ci_dict['name']
-        self.working_dir = os.path.join(self.repo.branch_dir, self.name)
-        self.safe_branch_name = self.name.replace('/', '_')
-        build_dict = ci_dict.get('build', repo.default_build)
+        if 'name' in ci_dict:
+            self.name = ci_dict['name']
+            self.name_regex = None
+            self.working_dir = os.path.join(self.repo.branch_dir, self.name)
+            self.safe_branch_name = self.name.replace('/', '_')
+            build_dict = ci_dict.get('build', repo.default_build)
 
-        self.macro_names = dict(repo.macro_names)
-        self.macro_names.update(ci_dict)
-        self.macro_names['__branch_name__'] = self.name
-        self.macro_names['__branch_name_safe__'] = self.safe_branch_name
-        self.macro_names['__branch_working_dir__'] = self.working_dir
+            self.macro_names = dict(repo.macro_names)
+            self.macro_names.update(ci_dict)
+            self.macro_names['__branch_name__'] = self.name
+            self.macro_names['__branch_name_safe__'] = self.safe_branch_name
+            self.macro_names['__branch_working_dir__'] = self.working_dir
 
-        self.build = Build(self, build_dict)
+            self.build = Build(self, build_dict)
+        elif 'name_regex' in ci_dict:
+            self.name_regex = ci_dict['name_regex']
+            self.config_dict = dict(ci_dict)
+            self.name = self.name_regex
+        else:
+            raise RuntimeError('Invalid ci_branch section: {0}'.format(ci_dict))
+
 
     def create_sandbox(self):
         if self.repo.sandbox:
